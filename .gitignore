@@ -1,0 +1,4 @@
+rootfs
+rootfs/*
+go.mod
+gocker
