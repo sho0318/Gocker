@@ -1,4 +1,4 @@
-# Gocker - Minimal Container Runtime in Go
+# Gocker
 
 ## 実装されている機能
 
