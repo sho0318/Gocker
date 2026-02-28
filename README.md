@@ -39,7 +39,7 @@ rm alpine.tar.gz
 プログラムをコンパイルします
 
 ```bash
-go build -o gocker main.go
+go build -o gocker cmd/gocker/main.go
 ```
 
 2. 実行
