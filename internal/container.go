@@ -43,10 +43,7 @@ func (c *Container) Run() error {
 		return fmt.Errorf("failed to add process to cgroup: %w", err)
 	}
 
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("child process failed: %w", err)
-	}
-
+	cmd.Wait()
 	return nil
 }
 
@@ -77,9 +74,5 @@ func (c *Container) RunChild() error {
 	cmd := exec.Command(c.cfg.Command[0], c.cfg.Command[1:]...)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to run command: %w", err)
-	}
-
-	return nil
+	return cmd.Run()
 }
