@@ -26,8 +26,19 @@ func (r *Runtime) Start() error {
 
     syscall.Mount("proc", "proc", "proc", 0, "")
 
+	if err := r.setupDNS(); err != nil {
+        fmt.Printf("Warning: failed to setup DNS: %v\n", err)
+    }
+
     cmd := exec.Command(r.config.Command[0], r.config.Command[1:]...)
     cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 
     return cmd.Run()
+}
+
+func (r *Runtime) setupDNS() error {
+    if err := os.MkdirAll("/etc", 0755); err != nil {
+        return err
+    }
+    return os.WriteFile("/etc/resolv.conf", []byte("nameserver 8.8.8.8\n"), 0644)
 }
