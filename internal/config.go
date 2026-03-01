@@ -8,6 +8,12 @@ type Config struct {
 
 	RootfsPath      string
 	Hostname        string
+
+	BridgeName      string
+	BridgeIP        string
+	ContainerIP     string
+
+	Gateway         string
 	
 	Command         []string
 }
@@ -20,6 +26,10 @@ func NewDefaultConfig(command []string) *Config {
 		MaxSwap:      "0",
 		RootfsPath:   "./rootfs",
 		Hostname:     "gocker-container",
+		BridgeName:   "br0",
+		BridgeIP:     "172.18.0.1/24",
+		ContainerIP:  "172.18.0.2/24",
+		Gateway:      "172.18.0.1",
 		Command:      command,
 	}
 }

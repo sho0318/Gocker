@@ -4,49 +4,37 @@ import (
 	"fmt"
 	"os"
 
-	"mydocker/internal"
+	"gocker/internal"
+	"gocker/internal/container"
+	"gocker/internal/host"
 )
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
-}
-
-func run() error {
-	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: %s <run|child> <command> [args...]", os.Args[0])
-	}
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", r)
+			os.Exit(1)
+		}
+	}()
 
 	command := os.Args[1]
 	
 	switch command {
 	case "run":
-		if len(os.Args) < 3 {
-			return fmt.Errorf("usage: %s run <command> [args...]", os.Args[0])
-		}
-		return runContainer(os.Args[2:])
-		
+		runContainer(os.Args[2:])
 	case "child":
-		if len(os.Args) < 3 {
-			return fmt.Errorf("usage: %s child <command> [args...]", os.Args[0])
-		}
-		return runChild(os.Args[2:])
-		
-	default:
-		return fmt.Errorf("unknown command: %s\nAvailable commands: run, child", command)
+		runChild(os.Args[2:])
 	}
 }
 
-func runContainer(command []string) error {
+func runContainer(command []string) {
 	cfg := internal.NewDefaultConfig(command)
-	container := internal.NewContainer(cfg)
-	return container.Run()
+	launcher := host.NewLauncher(cfg)
+	launcher.Start()
 }
 
-func runChild(command []string) error {
+func runChild(command []string) {
 	cfg := internal.NewDefaultConfig(command)
-	container := internal.NewContainer(cfg)
-	return container.RunChild()
+	runtime := container.NewRuntime(cfg)
+	runtime.Start()
 }
