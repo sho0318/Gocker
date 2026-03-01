@@ -23,7 +23,8 @@ func main() {
 	case "run":
 		runContainer(os.Args[2:])
 	case "child":
-		runChild(os.Args[2:])
+		id := os.Args[2]
+		runChild(id, os.Args[3:])
 	}
 }
 
@@ -33,8 +34,9 @@ func runContainer(command []string) {
 	launcher.Start()
 }
 
-func runChild(command []string) {
+func runChild(id string, command []string) {
 	cfg := internal.NewDefaultConfig(command)
+	cfg.ContainerID = id
 	runtime := container.NewRuntime(cfg)
 	runtime.Start()
 }

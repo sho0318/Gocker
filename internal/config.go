@@ -7,6 +7,9 @@ type Config struct {
 	MaxSwap         string
 
 	RootfsPath      string
+	RuntimePath     string
+	ContainerID     string
+
 	Hostname        string
 
 	BridgeName      string
@@ -26,6 +29,7 @@ func NewDefaultConfig(command []string) *Config {
 		MaxMemory:    "10M",
 		MaxSwap:      "0",
 		RootfsPath:   "./rootfs",
+		RuntimePath:  "/tmp/gocker",
 		Hostname:     "gocker-container",
 		BridgeName:   "br0",
 		BridgeIP:     "172.18.0.1/24",
