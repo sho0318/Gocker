@@ -7,6 +7,7 @@ import (
     "syscall"
 
     "gocker/internal"
+	"gocker/internal/filesystem"
 )
 
 type Runtime struct {
@@ -18,10 +19,20 @@ func NewRuntime(config *internal.Config) *Runtime {
 }
 
 func (r *Runtime) Start() error {
+	err := syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
+    if err != nil {
+        return fmt.Errorf("failed to set mount propagation to private: %v", err)
+    }
+
 	fmt.Printf("Running %v\n", r.config.Command)
     syscall.Sethostname([]byte(r.config.Hostname))
 
-    syscall.Chroot(r.config.RootfsPath)
+	om := filesystem.NewOverlayManager(r.config.RootfsPath, r.config.RuntimePath, r.config.ContainerID)
+    mergedPath, err := om.MountOverlay()
+    if err != nil { return err }
+	defer om.Unmount()
+
+    syscall.Chroot(mergedPath)
     os.Chdir("/")
 
     syscall.Mount("proc", "proc", "proc", 0, "")
