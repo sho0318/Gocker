@@ -28,6 +28,10 @@ func (l *Launcher) Start() {
 	nm := network.NewNetworkManager(l.config)
 	nm.Setup()
 
+	rawIP := nm.AllocateIP()
+	defer nm.ReleaseIP(rawIP)
+	l.config.ContainerIP = rawIP + "/24"
+
 	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, l.config.Command...)...)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 	cmd.SysProcAttr = &syscall.SysProcAttr{
